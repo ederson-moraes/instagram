@@ -1,4 +1,7 @@
 const Post = require('../models/Post')
+const sharp = require('sharp')
+const path = require('path')
+const fs = require('fs')
 
 module.exports = {
     async index(req, res) {
@@ -7,17 +10,29 @@ module.exports = {
     },
 
     async store(req, res) {
-        console.log(req.file)
+
 
         const { author, place, hashtags, description } = req.body
         const { filename: image } = req.file
+
+        const [name] = image.split('.')
+        const fileName = `${name}.jpg`
+
+
+        await sharp(req.file.path)
+            .resize(500)
+            .jpeg({ quality: 70 })
+            .toFile(
+                path.resolve(req.file.destination, 'resized', fileName)
+            )
+        fs.unlinkSync(req.file.path) //if you want to delete the original file
 
         const post = await Post.create({
             author,
             place,
             hashtags,
             description,
-            image
+            image: fileName
         })
 
         return res.json(post)

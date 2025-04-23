@@ -2,33 +2,36 @@ const express = require('express')
 const cors = require('cors')
 const dotenv = require('dotenv')
 const mongoose = require('mongoose')
+const path = require('path')
 
 dotenv.config()
 
 const app = express()
 
-app.use(cors(
-    {
-        origin: '*', // Replace with your frontend URL
-        methods: ['GET', 'POST', 'PUT', 'DELETE'],
-        credentials: true,
-    }))
-
-
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
-
-app.use(require('./routes'))
-
+const server = require('http').Server(app)
+const io = require('socket.io')(server)
 
 
 mongoose.connect(process.env.MONGODB_URI)
     .then(() => console.log('MongoDB connected'))
     .catch(err => console.log(err))
 
+app.use((req, res, next) => {
+    req.io = io
+    next()
+}
+)
+
+app.use(cors())
+//app.use(express.json())
+//app.use(express.urlencoded({ extended: true }))
+app.use('/files', express.static(path.resolve(__dirname, '..', 'uploads', 'resized')))
 app.use(require('./routes'))
 
-app.listen(process.env.PORT, () => {
+
+app.use(require('./routes'))
+
+server.listen(process.env.PORT, () => {
     console.log(`Server is running on port ${process.env.PORT}`)
 }
 )

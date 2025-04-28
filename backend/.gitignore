@@ -1,4 +1,7 @@
 node_modules
-upload/*
+uploads/*
 .env
 .DS_Store
+/uploads/*
+!/uploads/resized/
+/uploads/resized/*

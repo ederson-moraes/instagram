@@ -9,7 +9,12 @@ dotenv.config()
 const app = express()
 
 const server = require('http').Server(app)
-const io = require('socket.io')(server)
+const io = require('socket.io')(server, {
+    cors: {
+        origin: '*', // Allow all origins
+        methods: ['GET', 'POST'],
+    }
+})
 
 
 mongoose.connect(process.env.MONGODB_URI)
@@ -22,7 +27,9 @@ app.use((req, res, next) => {
 }
 )
 
-app.use(cors())
+app.use(cors(
+
+))
 //app.use(express.json())
 //app.use(express.urlencoded({ extended: true }))
 app.use('/files', express.static(path.resolve(__dirname, '..', 'uploads', 'resized')))

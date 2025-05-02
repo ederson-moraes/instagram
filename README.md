@@ -19,9 +19,7 @@
 - HTML
 - JavaScript
 - CSS
-
-- React Router
-- Zustand
+- MongoDB
 
 ## 📦 Features
 
